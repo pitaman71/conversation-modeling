@@ -1,7 +1,7 @@
 /** Descriptors.ts
  */
 
-import { z } from 'zod';
+import { Domain } from 'typescript-introspection';
 import { Properties, Relations } from './Entities';
 import { Stream as FactStream } from './Facts';
 
@@ -84,7 +84,7 @@ export interface Property<
     description: string // purpose and meaning of this property and the value(s) it stores
     anchor: Record<keyof AnchorType, {
         description: string // role of this anchor symbol
-    }>
+    }>, elementDomain: Domain<ValueType>
 }
 
 export interface Relation<
