@@ -1,6 +1,6 @@
 /** Entities.ts */
 
-import { Property as PropertyDescriptor, Relation as RelationDescriptor } from './Descriptors';
+import { Property as PropertyDescriptor, Relation as RelationDescriptor, Reference } from './Descriptors';
 
 /** Property
  * binds a property descriptor (of type Descriptors.Property) to a specific instance of that property in persistent storage
@@ -10,7 +10,7 @@ export interface Property<
     AnchorType extends Record<symbol, PersistentEntityIdentifier>,
     ValueType extends any
 > {
-    descriptor: PropertyDescriptor<PersistentEntityIdentifier, AnchorType, ValueType>;
+    descriptor: Reference<'Property', PropertyDescriptor<PersistentEntityIdentifier, AnchorType, ValueType>>;
     anchor: AnchorType;
 }
 
@@ -22,7 +22,7 @@ export interface Relation<
     AnchorType extends Record<symbol, PersistentEntityIdentifier>, 
     EntryType extends Omit<Record<symbol, PersistentEntityIdentifier>, keyof AnchorType>
 > {
-    descriptor: RelationDescriptor<PersistentEntityIdentifier, AnchorType, EntryType>;
+    descriptor: Reference<'Relation', RelationDescriptor<PersistentEntityIdentifier, AnchorType, EntryType>>;
     anchor: AnchorType;
 }
 

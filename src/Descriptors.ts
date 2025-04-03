@@ -5,6 +5,8 @@ import { Domain } from 'typescript-introspection';
 import { Properties, Relations } from './Entities';
 import { Stream as FactStream } from './Facts';
 
+export type CardinalityType = 'scalar'|'set'|'sequence';
+
 /** When
  * One kind of clause that may appear inside of an intent descriptor.
  * Describes the conditions under which this intent may be accesssed,
@@ -32,7 +34,7 @@ export interface Action<
     name: string;
     category: 'GET'|'UPDATE'|'DELETE'|'SHOW';
     when: When<PersistentEntityIdentifier, AnchorType>[], // conditions under which this outcome should be deemed to have been reached
-    then: (anchor: AnchorType, facts: FactStream<PersistentEntityIdentifier, AnchorType, PropertiesType, RelationsType>) => Promise<{ anchor: AnchorType, facts: FactStream<PersistentEntityIdentifier, AnchorType, PropertiesType, RelationsType> }>
+    then: (anchor: AnchorType, facts: FactStream<PersistentEntityIdentifier>) => Promise<{ anchor: AnchorType, facts: FactStream<PersistentEntityIdentifier> }>
 };
 
 export type Anchor<
@@ -84,7 +86,8 @@ export interface Property<
     description: string // purpose and meaning of this property and the value(s) it stores
     anchor: Record<keyof AnchorType, {
         description: string // role of this anchor symbol
-    }>, elementDomain: Domain<ValueType>
+    }>, elementDomain: Domain<ValueType>,
+    cardinality: CardinalityType
 }
 
 export interface Relation<
@@ -100,4 +103,25 @@ export interface Relation<
     entry: Record<keyof EntryType, {
       description: string // role of this entry symbol
     }>;
+}
+
+/**
+ * This interface is used to define a JSON object that logically 
+ * corresponds (and may be "resovled" to) a statically defined global 
+ * object, but which can be serialized to/from JSON with only the canonical 
+ * name of that global object.
+ * 
+ * This interface has two valid states: "unresolved" and "resolved".
+ * In the "unresolved" state, this.canonicalName !== undefined
+ * and this.descriptor === undefined.
+ * 
+ * In the "resolved" state,
+ * this.canonicalName !== undefined &&
+ * this.descriptor !== undefined &&
+ * this.canonicalName === this.descriptor.canonicalName
+ */
+export interface Reference<Kind extends string, TargetType> {
+    kind: Kind;
+    canonicalName?: string;
+    descriptor?: TargetType;
 }
